@@ -20,9 +20,12 @@ export default function Subscribe({ children, topic }: Props) {
   }
 
   useEffect(() => {
-    subscribed?.once('message', (t, message) => {
-      addMessage({ message: message.toString(), topic: t, id: uuid() });
-    });
+    subscribed?.once(
+      'message',
+      (t: string, message: { toString: () => string }) => {
+        addMessage({ message: message.toString(), topic: t, id: uuid() });
+      }
+    );
   }, [subscribed, messages]);
 
   return (
