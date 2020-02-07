@@ -100,10 +100,11 @@
     "rollup-plugin-typescript2": "^0.25.3",
     "ts-jest": "^25.2.0",
     "typescript": "^3.4.3",
+    "mqtt": "3.0.0",
     "yup": "^0.28.1"
   },
   "peerDependencies": {
-    "mqtt": "^3.0.0",
+    "mqtt": "3.0.0",
     "react": ">= 16.8.0",
     "react-dom": ">= 16.8.0",
     "uuid": "^3.4.0",
