@@ -1,6 +1,6 @@
 {
   "name": "mqtt-react-hooks",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "ReactJS library for Pub/Sub communication with an MQTT broker using Hooks",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -13,30 +13,6 @@
   },
   "author": "VictorHAS",
   "license": "MIT",
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
-  "lint-staged": {
-    "lib/**/*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write",
-      "jest --bail --findRelatedTests",
-      "git add"
-    ],
-    "__tests__/**/*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write",
-      "git add"
-    ],
-    "example/**/*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write",
-      "git add"
-    ]
-  },
   "scripts": {
     "dev": "npm-run-all -p dev:*",
     "dev:example": "cd example && yarn start",
@@ -70,8 +46,9 @@
     "@types/yup": "^0.26.30",
     "@typescript-eslint/eslint-plugin": "^2.19.0",
     "@typescript-eslint/parser": "^2.19.0",
-    "commitlint-config-rocketseat": "^0.0.1",
+    "commitizen": "^4.0.3",
     "coveralls": "^3.0.3",
+    "cz-conventional-changelog": "3.1.0",
     "dot-object": "^2.1.2",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.0.1",
@@ -110,6 +87,11 @@
     "yup": ">= 0.27.0"
   },
   "dependencies": {
-    "mqtt": "2.7.0"
+    "mqtt": "2.15.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

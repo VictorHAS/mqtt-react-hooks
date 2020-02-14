@@ -1,7 +1,8 @@
 import { connect, MqttClient, IClientOptions } from 'mqtt';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
-import { mqttContext } from './Context';
+import MqttContext from './Context';
+import { Message } from './types';
 
 interface Props {
   brokerUrl?: string | object;
@@ -12,6 +13,7 @@ interface Props {
 export default function Connector({ children, brokerUrl, opts }: Props) {
   const [status, setStatus] = useState<string>('offline');
   const [mqtt, setMqtt] = useState<MqttClient>();
+  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     const mqttInstance = connect(brokerUrl, opts);
@@ -26,9 +28,13 @@ export default function Connector({ children, brokerUrl, opts }: Props) {
     };
   }, []);
 
+  const addMessage = useCallback((message: Message) => {
+    setMessages(state => [...state, message]);
+  }, []);
+
   return (
-    <mqttContext.Provider value={{ status, mqtt }}>
+    <MqttContext.Provider value={{ status, mqtt, addMessage, messages }}>
       {children}
-    </mqttContext.Provider>
+    </MqttContext.Provider>
   );
 }

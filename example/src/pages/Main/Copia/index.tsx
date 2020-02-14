@@ -3,15 +3,15 @@ import React from 'react';
 import { useSubscription } from '../../../../../lib';
 
 export default function Status() {
-  const { msgs, status, mqtt } = useSubscription('light/esp32/rele1');
+  const { msgs, status, mqtt } = useSubscription('light/esp33/rele1');
 
   function handleClick(message: string) {
-    return mqtt?.publish('light/esp32/rele1', message);
+    return mqtt?.publish('light/esp33/rele1', message);
   }
 
   return (
     <>
-      <h1>{`Status: ${status}; Host: ${mqtt?.options.host}; Protocol: ${mqtt?.options.protocol}; Topic: light/esp32/rele1 `}</h1>
+      <h1>{`Status: ${status}; Host: ${mqtt?.options.host}; Protocol: ${mqtt?.options.protocol}; Topic: light/esp33/rele1`}</h1>
       <div style={{ display: 'flex' }}>
         <button type="button" onClick={() => handleClick('v')}>
           Disable led

@@ -3,11 +3,8 @@ import { MqttClient } from 'mqtt';
 export interface MqttContext {
   status: string;
   mqtt: MqttClient | undefined;
-}
-
-export interface SubscribeContext {
-  messages: Message[] | undefined;
-  topic: string;
+  messages: Message[];
+  addMessage: (message: Message) => void;
 }
 
 export interface Message {

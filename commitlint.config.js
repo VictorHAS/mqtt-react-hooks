@@ -1,3 +1,1 @@
-module.exports = {
-  extends: ['rocketseat'],
-};
+module.exports = { extends: ['@commitlint/config-conventional'] };
