@@ -1,12 +1,12 @@
 import { useContext, useEffect, useMemo } from 'react';
 import uuid from 'uuid';
 
-import FormContext from './Context';
-import { MqttContext } from './types';
+import MqttContext from './Context';
+import { MqttContext as Context } from './types';
 
 export default function useSubscription(topic: string) {
-  const { mqtt, status, messages, addMessage } = useContext<MqttContext>(
-    FormContext
+  const { mqtt, status, messages, addMessage } = useContext<Context>(
+    MqttContext
   );
 
   const subscribed = useMemo(() => mqtt?.subscribe(topic), [mqtt]);

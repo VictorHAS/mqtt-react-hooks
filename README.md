@@ -27,8 +27,13 @@ Just add mqtt-react-hooks to your project:
 yarn add mqtt-react-hooks
 ```
 
+### Hooks availables
+
+- useMqttState -> return { status, mqtt, allMessages }
+- useSubscription(topic) -> return { msgs, mqtt, status }
+
 ### Usage
-Currently, mqtt-react-hooks exports two enhancers.
+Currently, mqtt-react-hooks exports one enhancers.
 Similarly to react-redux, you'll have to first wrap a root component with a
 ```Connector``` which will initialize the mqtt instance.
 
@@ -75,24 +80,6 @@ export default function Status() {
 ```
 
 #### Subscribe
-**Example Subscribed component:**
-```js
-import React from 'react';
-import { Connector, Subscribe } from 'mqtt-react-hooks';
-
-export default function Main() {
-   return (
-    <Connector brokerUrl="mqtt://test.mosquitto.org:8080">
-      // simple subscription to messages on the "#" topic
-      <Subscribe topic="#">
-        <Status />
-      </Subscribe>
-    </Connector>
-  );
-}
-
-```
-
 **Example Posting Messages**
 
 MQTT Client is passed on useMqttState and can be used to publish messages via
@@ -117,11 +104,11 @@ export default function Status() {
 }
 ```
 
-**Example Receiving Messages**
+**Example Subscribing and Receiving messages**
 ```js
 import React from 'react';
 
-import { useSubscribeState } from 'mqtt-react-hooks';
+import { useSubscription } from 'mqtt-react-hooks';
 
 export default function Status() {
 
@@ -130,12 +117,12 @@ export default function Status() {
   *  topic: string
   *  message: string
   */
-  const { messages } = useSubscribeState();
+  const { msgs } = useSubscription('room/esp32/teste');
 
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {messages?.map(message => (
+       {msgs?.map(message => (
           <span key={message.id}>
             {`topic:${message.topic} - message: ${message.message}`}
           </span>
