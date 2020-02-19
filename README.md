@@ -29,8 +29,8 @@ yarn add mqtt-react-hooks
 
 ### Hooks availables
 
-- useMqttState -> return { status, mqtt, allMessages }
-- useSubscription(topic) -> return { msgs, mqtt, status }
+- useMqttState -> return { status, mqtt, allMessages, lastMessage }
+- useSubscription(topic) -> return { msgs, mqtt, status, lastMessage, lastMessageOnTopic }
 
 ### Usage
 Currently, mqtt-react-hooks exports one enhancers.
