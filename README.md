@@ -115,7 +115,7 @@ export default function Status() {
   /* Message structure:
   *  id: auto-generated uuidv4
   *  topic: string
-  *  message: string
+  *  message: object || string
   */
   const { msgs } = useSubscription('room/esp32/teste');
 
