@@ -8,6 +8,7 @@
     "allowJs": false,
     "jsx": "react",
     "declaration": true,
+    "declarationDir": "./dist",
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
