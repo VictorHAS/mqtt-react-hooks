@@ -1,14 +1,14 @@
 import { useContext, useEffect, useMemo } from 'react';
 import MQTTPattern from 'mqtt-pattern';
-import uuid from 'uuid';
+import uuid from 'uuid/v4';
 
 import MqttContext from './Context';
 import { MqttContext as Context } from './types';
 
-export default function useSubscription<T>(topic: string) {
-  const { mqtt, status, messages, addMessage, lastMessage } = useContext<
-    Context<T>
-  >(MqttContext);
+export default function useSubscription(topic: string) {
+  const { mqtt, status, message, setMessage } = useContext<Context>(
+    MqttContext,
+  );
   const subscribed = useMemo(() => mqtt?.subscribe(topic), [mqtt]);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export default function useSubscription<T>(topic: string) {
       subscribed?.once(
         'message',
         (t: string, message: { toString: () => string }) => {
-          let msg;
+          let msg: string;
           try {
             msg = JSON.parse(message.toString());
           } catch (e) {
@@ -25,26 +25,20 @@ export default function useSubscription<T>(topic: string) {
           const packet = {
             message: msg,
             topic: t,
-            id: uuid(),
           };
           if (MQTTPattern.matches(topic, t)) {
-            addMessage(packet);
+            setMessage(packet);
           }
-        }
+        },
       );
     }
     getMessages();
-  }, [subscribed, messages]);
-
-  const msgs = messages.filter(msg => MQTTPattern.matches(topic, msg.topic));
-  const lastMessageOnTopic = msgs[msgs.length - 1];
+  }, [subscribed]);
 
   return {
-    msgs,
     mqtt,
     status,
-    lastMessage,
-    lastMessageOnTopic,
     topic,
+    message,
   };
 }

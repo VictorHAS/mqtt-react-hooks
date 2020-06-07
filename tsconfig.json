@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "noEmit": true,
     "outDir": "build",
     "module": "esnext",
     "target": "es5",
@@ -13,7 +14,7 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
@@ -23,5 +24,5 @@
     "importHelpers": true
   },
   "include": ["lib"],
-  "exclude": ["node_modules", "build", "dist", "example", "rollup.config.js"]
+  "exclude": ["node_modules", "build", "dist", "example"]
 }
