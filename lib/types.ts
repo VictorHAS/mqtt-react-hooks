@@ -1,20 +1,22 @@
 import { MqttClient } from 'mqtt';
-import { SetStateAction, Dispatch } from 'react';
 
-export interface MqttContext {
-  status: string;
-  mqtt: MqttClient | undefined;
-  message: Message;
-  setMessage: Dispatch<SetStateAction<Message>>;
+export interface IMqttContext {
+  connectionStatus: string;
+  mqtt?: MqttClient;
 }
 
-export interface MessageStructure {
+export interface IuseSubscription {
+  lastMessage: IMessage;
+  topic: string;
+}
+
+export interface IMessageStructure {
   [key: string]: string;
 }
 
-export interface Message {
+export interface IMessage {
   topic: string;
-  message?: string | MessageStructure;
+  message?: string | IMessageStructure;
 }
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;

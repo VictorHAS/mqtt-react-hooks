@@ -17,7 +17,6 @@ module.exports = {
       tsx: true,
     },
     sourceType: 'module',
-    project: resolve(__dirname, 'tsconfig.json'),
   },
   parser: '@typescript-eslint/parser',
   plugins: [
@@ -47,13 +46,20 @@ module.exports = {
         extensions: ['.jsx', '.tsx'],
       },
     ],
+    'react/jsx-filename-extension': [
+      'warn',
+      {
+        extensions: ['.jsx', '.tsx'],
+      },
+    ],
     'import-helpers/order-imports': [
       'warn',
       {
         'newlines-between': 'always',
         groups: [
-          '/^react/',
+          ['/^react/'],
           ['builtin', 'external', 'internal'],
+          '/^@/',
           ['parent', 'sibling', 'index'],
         ],
         alphabetize: { order: 'asc', ignoreCase: true },

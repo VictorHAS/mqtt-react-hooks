@@ -52,7 +52,7 @@ export default {
           declarationDir: path.resolve(PACKAGE_ROOT_PATH, './typings'),
           declarationMap: true,
         },
-        include: [path.resolve(PACKAGE_ROOT_PATH, './lib/**/*')],
+        include: [path.resolve(PACKAGE_ROOT_PATH, './lib/*')],
       },
       rollupCommonJSResolveHack: true,
       useTsconfigDeclarationDir: true,

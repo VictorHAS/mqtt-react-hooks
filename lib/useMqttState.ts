@@ -1,13 +1,12 @@
 import { useContext } from 'react';
 import MqttContext from './Context';
-import { MqttContext as Context } from './types';
+import { IMqttContext as Context } from './types';
 
-export default function useMqttState<T>() {
-  const { status, mqtt, message } = useContext<Context<T>>(MqttContext);
+export default function useMqttState() {
+  const { connectionStatus, mqtt } = useContext<Context>(MqttContext);
 
   return {
-    status,
+    connectionStatus,
     mqtt,
-    message,
   };
 }
