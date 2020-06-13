@@ -15,12 +15,13 @@
     "noImplicitAny": false,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
+    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "baseUrl": "."
   },
-  "include": ["lib"],
-  "exclude": ["node_modules", "dist", "typings"]
+  "include": ["lib","__tests__"],
+  "exclude": ["node_modules", "build", "dist", "typings"]
 }

@@ -6,8 +6,9 @@ export interface IMqttContext {
 }
 
 export interface IuseSubscription {
-  lastMessage: IMessage;
+  lastMessage?: IMessage;
   topic: string;
+  mqtt?: MqttClient;
 }
 
 export interface IMessageStructure {

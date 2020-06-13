@@ -1,5 +1,6 @@
-import { connect, MqttClient, IClientOptions } from 'mqtt';
 import React, { useEffect, useState } from 'react';
+
+import { connect, MqttClient, IClientOptions } from 'mqtt';
 
 import MqttContext from './Context';
 
@@ -23,13 +24,13 @@ export default function Connector({
     mqttInstance.on('connect', () => setStatus('connected'));
     mqttInstance.on('reconnect', () => setStatus('reconnecting'));
     mqttInstance.on('close', () => setStatus('closed'));
-    mqttInstance.on('offline', () => setStatus('offline'));
     mqttInstance.on('error', error => setStatus(error.message));
 
     return () => {
-      mqttInstance?.end(true);
+      mqttInstance.end();
     };
-  }, [brokerUrl, options]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brokerUrl]);
 
   return (
     <MqttContext.Provider value={{ connectionStatus, mqtt }}>

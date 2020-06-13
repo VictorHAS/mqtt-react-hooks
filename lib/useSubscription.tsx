@@ -1,16 +1,17 @@
 import { useState, useContext, useEffect } from 'react';
-import MQTTPattern from 'mqtt-pattern';
+
 import { IClientSubscribeOptions } from 'mqtt';
+import MQTTPattern from 'mqtt-pattern';
 
 import MqttContext from './Context';
-import { IMqttContext as Context, IMessage } from './types';
+import { IMqttContext as Context, IMessage, IuseSubscription } from './types';
 
 export default function useSubscription(
   topic: string,
   options: IClientSubscribeOptions = {} as IClientSubscribeOptions,
-) {
+): IuseSubscription {
   const { mqtt } = useContext<Context>(MqttContext);
-  const [lastMessage, setMessage] = useState<IMessage>();
+  const [lastMessage, setMessage] = useState<IMessage | undefined>();
 
   useEffect(() => {
     mqtt
