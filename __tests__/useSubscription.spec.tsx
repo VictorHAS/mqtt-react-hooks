@@ -3,8 +3,8 @@ import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 
 import { Connector, useSubscription } from '../lib';
+import { URL, options } from './connection';
 
-const URL = 'mqtt://127.0.0.1:1883';
 const TOPIC = 'test';
 
 let wrapper;
@@ -12,7 +12,7 @@ let wrapper;
 describe('useSubscription', () => {
   beforeAll(() => {
     wrapper = ({ children }) => (
-      <Connector brokerUrl={URL}>{children}</Connector>
+      <Connector brokerUrl={URL} options={options}>{children}</Connector>
     );
   });
 
