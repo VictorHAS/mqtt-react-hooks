@@ -10,7 +10,9 @@ let wrapper;
 describe('Connector wrapper', () => {
   beforeAll(() => {
     wrapper = ({ children }) => (
-      <Connector brokerUrl={URL} options={options}>{children}</Connector>
+      <Connector brokerUrl={URL} options={options}>
+        {children}
+      </Connector>
     );
   });
 
@@ -23,10 +25,7 @@ describe('Connector wrapper', () => {
 
     await waitForNextUpdate();
 
-    expect(result.current.connectionStatus).toBe(
-      'connect ECONNREFUSED 192.168.1.12:1884',
-    );
-    console.log(result.current.connectionStatus);
+    expect(result.current.connectionStatus).toBe('closed');
   });
 
   it('should connect with mqtt', async () => {

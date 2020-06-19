@@ -12,7 +12,9 @@ let wrapper;
 describe('useSubscription', () => {
   beforeAll(() => {
     wrapper = ({ children }) => (
-      <Connector brokerUrl={URL} options={options}>{children}</Connector>
+      <Connector brokerUrl={URL} options={options}>
+        {children}
+      </Connector>
     );
   });
 
