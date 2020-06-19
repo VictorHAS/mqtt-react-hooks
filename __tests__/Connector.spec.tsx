@@ -3,15 +3,14 @@ import React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
 
 import { useMqttState, Connector } from '../lib';
-
-const URL = 'mqtt://127.0.0.1:1883';
+import { URL, options } from './connection';
 
 let wrapper;
 
 describe('Connector wrapper', () => {
   beforeAll(() => {
     wrapper = ({ children }) => (
-      <Connector brokerUrl={URL}>{children}</Connector>
+      <Connector brokerUrl={URL} options={options}>{children}</Connector>
     );
   });
 
