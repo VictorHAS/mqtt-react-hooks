@@ -1,6 +1,6 @@
 {
   "name": "mqtt-react-hooks",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "private": true,
   "description": "ReactJS library for Pub/Sub communication with an MQTT broker using Hooks",
   "main": "dist/index.js",
