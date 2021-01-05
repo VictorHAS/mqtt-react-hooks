@@ -8,6 +8,7 @@
     "allowJs": false,
     "jsx": "react",
     "declaration": true,
+    "declarationDir": "dist",
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
@@ -20,8 +21,9 @@
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "outDir": "./dist"
   },
-  "include": ["lib","__tests__"],
-  "exclude": ["node_modules", "build", "dist", "typings"]
+  "include": ["lib/*"],
+  "exclude": ["node_modules", "build", "dist", "__tests__"]
 }

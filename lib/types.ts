@@ -2,13 +2,16 @@ import { MqttClient } from 'mqtt';
 
 export interface IMqttContext {
   connectionStatus: string;
-  mqtt?: MqttClient;
+  client?: MqttClient | null;
+  message?: IMessage;
 }
 
-export interface IuseSubscription {
-  lastMessage?: IMessage;
+export interface IUseSubscription {
   topic: string;
-  mqtt?: MqttClient;
+  client?: MqttClient | null;
+  isSubscribed: boolean;
+  message?: IMessage;
+  connectionStatus: string;
 }
 
 export interface IMessageStructure {

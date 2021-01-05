@@ -1,45 +1,42 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useCallback } from 'react';
 
 import { IClientSubscribeOptions } from 'mqtt';
-import MQTTPattern from 'mqtt-pattern';
 
 import MqttContext from './Context';
-import { IMqttContext as Context, IMessage, IuseSubscription } from './types';
+import { IMqttContext as Context, IUseSubscription } from './types';
 
 export default function useSubscription(
   topic: string,
   options: IClientSubscribeOptions = {} as IClientSubscribeOptions,
-): IuseSubscription {
-  const { mqtt } = useContext<Context>(MqttContext);
-  const [lastMessage, setMessage] = useState<IMessage | undefined>();
+): IUseSubscription {
+  const { client, connectionStatus, message } = useContext<Context>(
+    MqttContext,
+  );
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  const subscribe = useCallback(async () => {
+    if (connectionStatus === 'Connected') {
+      client?.subscribe(topic, options, error => {
+        if (error) {
+          console.log('Subscribe to topics error', error);
+          return;
+        }
+        setIsSubscribed(true);
+      });
+    }
+  }, [connectionStatus, client, options, topic]);
 
   useEffect(() => {
-    mqtt
-      ?.subscribe(topic, options)
-      .on('message', (t: string, message: { toString: () => string }) => {
-        let msg: string;
-        try {
-          msg = JSON.parse(message.toString());
-        } catch (e) {
-          msg = message.toString();
-        }
-        const packet = {
-          message: msg,
-          topic: t,
-        };
-        if (MQTTPattern.matches(topic, t)) {
-          setMessage(packet);
-        }
-      });
-
-    return () => {
-      mqtt?.unsubscribe(topic);
-    };
-  }, [mqtt, options, topic]);
+    if (client) {
+      subscribe();
+    }
+  }, [client, connectionStatus, subscribe]);
 
   return {
-    mqtt,
+    client,
     topic,
-    lastMessage,
+    isSubscribed,
+    message,
+    connectionStatus,
   };
 }

@@ -1,17 +1,16 @@
 {
   "name": "mqtt-react-hooks",
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0-beta.1",
   "private": false,
   "description": "ReactJS library for Pub/Sub communication with an MQTT broker using Hooks",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
-  "typings": "typings/index.d.ts",
+  "types": "dist/index.d.ts",
   "directories": {
     "lib": "lib"
   },
   "files": [
-    "dist",
-    "typings"
+    "dist"
   ],
   "publishConfig": {
     "access": "public"
@@ -91,17 +90,14 @@
     "rollup-plugin-terser": "^5.2.0",
     "rollup-plugin-typescript2": "^0.25.3",
     "ts-jest": "^26.1.0",
-    "typescript": "^3.4.3",
-    "weak-napi": "^2.0.2",
-    "yup": "^0.28.1"
+    "typescript": "^3.4.3"
   },
   "peerDependencies": {
     "react": ">= 16.8.0",
-    "react-dom": ">= 16.8.0",
-    "yup": ">= 0.27.0"
+    "react-dom": ">= 16.8.0"
   },
   "dependencies": {
-    "mqtt": "^4.1.0",
+    "mqtt": "^4.2.6",
     "mqtt-pattern": "^1.2.0"
   },
   "config": {

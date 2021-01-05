@@ -4,10 +4,13 @@ import MqttContext from './Context';
 import { IMqttContext as Context } from './types';
 
 export default function useMqttState() {
-  const { connectionStatus, mqtt } = useContext<Context>(MqttContext);
+  const { connectionStatus, client, message } = useContext<Context>(
+    MqttContext,
+  );
 
   return {
     connectionStatus,
-    mqtt,
+    client,
+    message,
   };
 }
