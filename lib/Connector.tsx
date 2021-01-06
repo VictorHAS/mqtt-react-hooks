@@ -25,7 +25,20 @@ export default function Connector({
   const mqttConnect = useCallback(async () => {
     try {
       setStatus('Connecting');
-      setClient(connect(brokerUrl, options));
+      const mqtt = connect(brokerUrl, options);
+      mqtt.on('connect', () => {
+        setClient(mqtt);
+        setStatus('Connected');
+      });
+      mqtt.on('reconnect', () => {
+        setStatus('Reconnecting');
+      });
+      mqtt.on('error', err => {
+        console.error('Connection error: ', err);
+        mqtt?.end(true, {}, () => {
+          setStatus('offline');
+        });
+      });
     } catch (error) {
       setStatus(error);
     }
@@ -33,18 +46,6 @@ export default function Connector({
 
   useEffect(() => {
     if (client) {
-      client.on('connect', () => {
-        setStatus('Connected');
-      });
-      client.on('error', err => {
-        console.error('Connection error: ', err);
-        client?.end(true, {}, () => {
-          setStatus('offline');
-        });
-      });
-      client.on('reconnect', () => {
-        setStatus('Reconnecting');
-      });
       client.on('message', (topic, msg) => {
         const payload = {
           topic,

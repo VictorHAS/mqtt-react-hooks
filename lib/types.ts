@@ -9,7 +9,6 @@ export interface IMqttContext {
 export interface IUseSubscription {
   topic: string;
   client?: MqttClient | null;
-  isSubscribed: boolean;
   message?: IMessage;
   connectionStatus: string;
 }
