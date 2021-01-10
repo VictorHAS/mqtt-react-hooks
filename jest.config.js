@@ -1,10 +1,9 @@
-const { resolve } = require('path');
+const { join } = require('path');
 
 module.exports = {
   bail: true,
-  clearMocks: true,
   collectCoverage: true,
-  collectCoverageFrom: ['lib/**/*.{ts,tsx}'],
+  collectCoverageFrom: ['lib/*.tsx', '!lib/setupTest.tsx'],
   coverageDirectory: '__tests__/coverage',
   coverageReporters: ['json', 'lcov'],
   coverageThreshold: {
@@ -15,10 +14,10 @@ module.exports = {
       statements: 80,
     },
   },
-  testMatch: ['**/__tests__/**/*.spec.+(ts|tsx|js)'],
-  setupFilesAfterEnv: [resolve('./lib/setupTest.tsx')],
+  clearMocks: true,
+  testMatch: [join(__dirname, '__tests__/*.spec.{ts,tsx}')],
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  moduleFileExtensions: ['ts', 'tsx', 'js'],
 };

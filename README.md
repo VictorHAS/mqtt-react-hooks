@@ -29,8 +29,8 @@ yarn add mqtt-react-hooks
 
 ### Hooks availables
 
-- useMqttState -> return { status, mqtt, allMessages, lastMessage }
-- useSubscription(topic) -> return { msgs, mqtt, status, lastMessage, lastMessageOnTopic }
+- useMqttState -> return { connectionStatus, client, message }
+- useSubscription(topic: string | string[], options?: {} ) -> return { client, topic, message, connectionStatus }
 
 ### Usage
 Currently, mqtt-react-hooks exports one enhancers.
@@ -49,7 +49,7 @@ import Status from './Status';
 
 export default function App() {
   return (
-    <Connector brokerUrl="mqtt://test.mosquitto.org:8080">
+    <Connector brokerUrl="mqtt://test.mosquitto.org:1884">
         <Status />
     </Connector>
   );
@@ -66,15 +66,16 @@ export default function Status() {
 
   /*
   * Status list
-  * - offline
-  * - connected
-  * - reconnecting
-  * - closed
+  * - Offline
+  * - Connected
+  * - Reconnecting
+  * - Closed
+  * - Error: printed in console too
   */
-  const { status } = useMqttState();
+  const { connectionStatus } = useMqttState();
 
   return (
-    <h1>{`Status: ${status}`}</h1>
+    <h1>{`Status: ${connectionStatus}`}</h1>
   );
 }
 ```
@@ -90,10 +91,10 @@ import React from 'react';
 import { useMqttState } from 'mqtt-react-hooks';
 
 export default function Status() {
-  const { mqtt } = useMqttState();
+  const { client } = useMqttState();
 
   function handleClick(message) {
-    return mqtt.publish('esp32/led', message);
+    return client.publish('esp32/led', message);
   }
 
   return (
@@ -113,25 +114,60 @@ import { useSubscription } from 'mqtt-react-hooks';
 export default function Status() {
 
   /* Message structure:
-  *  id: auto-generated uuidv4
   *  topic: string
-  *  message: object || string
+  *  message: string
   */
-  const { msgs } = useSubscription('room/esp32/teste');
+  const { message } = useSubscription(['room/esp32/testing','room/esp32/light']);
 
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-       {msgs?.map(message => (
-          <span key={message.id}>
-            {`topic:${message.topic} - message: ${message.message}`}
-          </span>
-        ))}
+        <span>
+          {`topic:${message.topic} - message: ${message.message}`}
+        </span>
       </div>
     </>
   );
 }
 ```
+
+## Tips
+
+1. If you need to change the format in which messages will be inserted in message useState, you can pass the option of parserMethod in the Connector:
+```js
+import React, { useEffect, useState } from 'react';
+import { Connector, useSubscription } from 'mqtt-react-hooks';
+
+const Children = () => {
+  const { message, connectionStatus } = useSubscription('esp32/testing/#');
+  const [messages, setMessages] = useState<any>([]);
+
+  useEffect(() => {
+    if (message) setMessages((msgs: any) => [...msgs, message]);
+  }, [message]);
+
+  return (
+    <>
+      <span>{connectionStatus}</span>
+      <hr />
+      <span>{JSON.stringify(messages)}</span>
+    </>
+  );
+};
+
+const App = () => {
+  return (
+    <Connector
+      brokerUrl="mqtt://test.mosquitto.org:1884"
+      parserMethod={msg => msg} // msg is Buffer
+    >
+      <Children />
+    </Connector>
+  );
+};
+
+```
+
 
 ## Contributing
 

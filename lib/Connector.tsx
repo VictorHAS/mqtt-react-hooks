@@ -1,43 +1,85 @@
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+
 import { connect, MqttClient, IClientOptions } from 'mqtt';
-import React, { useEffect, useState, useCallback } from 'react';
 
 import MqttContext from './Context';
-import { Message, MessageStructure } from './types';
+import { IMessage, Error } from './types';
 
 interface Props {
   brokerUrl?: string | object;
-  opts?: IClientOptions | undefined;
+  options?: IClientOptions;
+  parserMethod?: (message) => string;
   children: React.ReactNode;
 }
 
-export default function Connector({ children, brokerUrl, opts }: Props) {
-  const [status, setStatus] = useState<string>('offline');
-  const [mqtt, setMqtt] = useState<MqttClient>();
-  const [messages, setMessages] = useState<Message<MessageStructure>[]>([]);
+export default function Connector({
+  children,
+  brokerUrl,
+  options = { keepalive: 0 },
+  parserMethod,
+}: Props) {
+  const mountedRef = useRef(true);
+  const [connectionStatus, setStatus] = useState<string | Error>('Offline');
+  const [client, setClient] = useState<MqttClient | null>(null);
+  const [message, setMessage] = useState<IMessage>();
+
+  const mqttConnect = useCallback(async () => {
+    try {
+      setStatus('Connecting');
+      const mqtt = connect(brokerUrl, options);
+      mqtt.on('connect', () => {
+        if (mountedRef.current) {
+          setClient(mqtt);
+          setStatus('Connected');
+        }
+      });
+      mqtt.on('reconnect', () => {
+        if (mountedRef.current) {
+          setStatus('Reconnecting');
+        }
+      });
+      mqtt.on('error', err => {
+        if (mountedRef.current) {
+          console.log(`Connection error: ${err}`);
+          setStatus(err?.message);
+        }
+      });
+      mqtt.on('offline', () => {
+        if (mountedRef.current) {
+          setStatus('Offline');
+        }
+      });
+      mqtt.on('end', () => {
+        if (mountedRef.current) {
+          setStatus('Offline');
+        }
+      });
+    } catch (error) {
+      setStatus(error);
+    }
+  }, [brokerUrl, options]);
 
   useEffect(() => {
-    const mqttInstance = connect(brokerUrl, opts);
-    setMqtt(mqttInstance);
-    mqttInstance.on('connect', () => setStatus('connected'));
-    mqttInstance.on('reconnect', () => setStatus('reconnecting'));
-    mqttInstance.on('close', () => setStatus('closed'));
-    mqttInstance.on('offline', () => setStatus('offline'));
+    if (client) {
+      client.on('message', (topic, msg) => {
+        const payload = {
+          topic,
+          message: parserMethod?.(msg) || msg.toString(),
+        };
+        setMessage(payload);
+      });
+    } else {
+      mqttConnect();
+    }
 
     return () => {
-      mqttInstance.end();
+      mountedRef.current = false;
+      client?.end(true);
     };
-  }, []);
-
-  const addMessage = useCallback((message: Message<{}>) => {
-    setMessages(state => [...state, message]);
-  }, []);
-
-  const lastMessage = messages[messages.length - 1];
+  }, [client, mqttConnect, parserMethod]);
 
   return (
-    <MqttContext.Provider
-      value={{ status, mqtt, addMessage, messages, lastMessage }}
-    >
+    <MqttContext.Provider value={{ connectionStatus, client, message }}>
       {children}
     </MqttContext.Provider>
   );

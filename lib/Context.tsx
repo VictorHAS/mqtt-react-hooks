@@ -2,6 +2,6 @@
 
 import { createContext } from 'react';
 
-import { MqttContext } from './types';
+import { IMqttContext } from './types';
 
-export default createContext<MqttContext<any>>({} as MqttContext<any>);
+export default createContext<IMqttContext>({} as IMqttContext);

@@ -1,10 +1,10 @@
-import path from 'path';
-import babel from 'rollup-plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
+import url from '@rollup/plugin-url';
+import path from 'path';
+import babel from 'rollup-plugin-babel';
 import { terser } from 'rollup-plugin-terser';
 import typescript from 'rollup-plugin-typescript2';
-import url from '@rollup/plugin-url';
 
 const PACKAGE_ROOT_PATH = process.cwd();
 const INPUT_FILE = path.join(PACKAGE_ROOT_PATH, 'lib/index.ts');
@@ -47,9 +47,14 @@ export default {
       exclude: 'node_modules/**',
     }),
     typescript({
+      tsconfigOverride: {
+        include: resolve(__dirname, 'lib'),
+        project: resolve(__dirname, 'tsconfig.json'),
+      },
       rollupCommonJSResolveHack: true,
       useTsconfigDeclarationDir: true,
       objectHashIgnoreUnknownHack: true,
+      clean: true,
     }),
     commonjs(),
     terser(),

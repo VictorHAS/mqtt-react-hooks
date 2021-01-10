@@ -1,21 +1,31 @@
 import { MqttClient } from 'mqtt';
 
-export interface MqttContext<T> {
-  status: string;
-  mqtt: MqttClient | undefined;
-  messages: Message<T>[];
-  lastMessage: Message<T> | undefined;
-  addMessage: (message: Message<T>) => void;
+export interface Error {
+  name: string;
+  message: string;
+  stack?: string;
 }
 
-export interface MessageStructure {
+export interface IMqttContext {
+  connectionStatus: string | Error;
+  client?: MqttClient | null;
+  message?: IMessage;
+}
+
+export interface IUseSubscription {
+  topic: string | string[];
+  client?: MqttClient | null;
+  message?: IMessage;
+  connectionStatus: string | Error;
+}
+
+export interface IMessageStructure {
   [key: string]: string;
 }
 
-export interface Message<T> {
+export interface IMessage {
   topic: string;
-  message?: T | MessageStructure;
-  id: string;
+  message?: string | IMessageStructure;
 }
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;

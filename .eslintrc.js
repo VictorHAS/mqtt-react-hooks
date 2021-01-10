@@ -1,5 +1,3 @@
-const { resolve } = require('path');
-
 module.exports = {
   env: {
     browser: true,
@@ -17,7 +15,6 @@ module.exports = {
       tsx: true,
     },
     sourceType: 'module',
-    project: resolve(__dirname, 'tsconfig.json'),
   },
   parser: '@typescript-eslint/parser',
   plugins: [
@@ -47,15 +44,17 @@ module.exports = {
         extensions: ['.jsx', '.tsx'],
       },
     ],
+    'react/jsx-filename-extension': [
+      'warn',
+      {
+        extensions: ['.jsx', '.tsx'],
+      },
+    ],
     'import-helpers/order-imports': [
       'warn',
       {
-        'newlines-between': 'always',
-        groups: [
-          '/^react/',
-          ['builtin', 'external', 'internal'],
-          ['parent', 'sibling', 'index'],
-        ],
+        newlinesBetween: 'always',
+        groups: ['/^react/', 'module', '/^~/', ['parent', 'sibling', 'index']],
         alphabetize: { order: 'asc', ignoreCase: true },
       },
     ],
