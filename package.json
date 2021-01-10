@@ -30,6 +30,21 @@
   "homepage": "https://github.com/victorHAS/mqtt-react-hooks#readme",
   "author": "VictorHAS",
   "license": "MIT",
+  "release": {
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": false
+        }
+      ],
+      "@semantic-release/changelog",
+      "@semantic-release/git"
+    ],
+    "branch": "master"
+  },
   "scripts": {
     "prebuild": "rimraf dist typings",
     "build": "rollup -c ./rollup.config.js",
@@ -45,6 +60,11 @@
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@rollup/plugin-url": "^4.0.2",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/commit-analyzer": "^8.0.1",
+    "@semantic-release/git": "^9.0.0",
+    "@semantic-release/npm": "^7.0.9",
+    "@semantic-release/release-notes-generator": "^9.0.1",
     "@testing-library/dom": "6.12.2",
     "@testing-library/jest-dom": "^5.1.1",
     "@testing-library/react": "9.4.0",
@@ -86,6 +106,7 @@
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-terser": "^5.2.0",
     "rollup-plugin-typescript2": "^0.25.3",
+    "semantic-release": "^17.3.1",
     "ts-jest": "^26.1.0",
     "typescript": "^3.4.3"
   },
