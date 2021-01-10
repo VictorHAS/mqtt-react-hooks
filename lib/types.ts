@@ -1,16 +1,22 @@
 import { MqttClient } from 'mqtt';
 
+export interface Error {
+  name: string;
+  message: string;
+  stack?: string;
+}
+
 export interface IMqttContext {
-  connectionStatus: string;
+  connectionStatus: string | Error;
   client?: MqttClient | null;
   message?: IMessage;
 }
 
 export interface IUseSubscription {
-  topic: string;
+  topic: string | string[];
   client?: MqttClient | null;
   message?: IMessage;
-  connectionStatus: string;
+  connectionStatus: string | Error;
 }
 
 export interface IMessageStructure {

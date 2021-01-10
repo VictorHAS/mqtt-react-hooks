@@ -19,13 +19,24 @@ describe('Connector wrapper', () => {
   it('should not connect with mqtt, wrong url', async () => {
     const { result, waitForValueToChange } = renderHook(() => useMqttState(), {
       wrapper: ({ children }) => (
-        <Connector brokerUrl="mqtt://192.168.1.12:1884">{children}</Connector>
+        <Connector
+          brokerUrl="mqtt://test.mosqu.org:1884"
+          options={{ connectTimeout: 2000 }}
+        >
+          {children}
+        </Connector>
       ),
     });
 
     await waitForValueToChange(() => result.current.connectionStatus);
 
-    return expect(result.current.connectionStatus).toBe('Reconnecting');
+    expect(result.current.connectionStatus).toBe(
+      'getaddrinfo ENOTFOUND test.mosqu.org',
+    );
+
+    await waitForValueToChange(() => result.current.connectionStatus);
+
+    expect(result.current.connectionStatus).toBe('Offline');
   });
 
   it('should connect with mqtt', async () => {
@@ -59,25 +70,4 @@ describe('Connector wrapper', () => {
       await result.current.client?.end();
     });
   });
-
-  // it('should get status reconnecting', async () => {
-  //   const { result, wait } = renderHook(() => useMqttState(), {
-  //     wrapper,
-  //   });
-
-  //   await wait(() => result.current.mqtt?.connected === true);
-
-  //   act(() => {
-  //     result.current.mqtt?.reconnect();
-  //   });
-
-  //   expect(result.current.connectionStatus).toBe('reconnecting');
-
-  //   jest.setTimeout(1000);
-  //   expect(result.current.connectionStatus).toBe('connected');
-
-  //   await act(async () => {
-  //     await result.current.mqtt?.end();
-  //   });
-  // });
 });

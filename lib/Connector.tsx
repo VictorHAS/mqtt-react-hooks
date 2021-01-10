@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 
 import { connect, MqttClient, IClientOptions } from 'mqtt';
 
 import MqttContext from './Context';
-import { IMessage } from './types';
+import { IMessage, Error } from './types';
 
 interface Props {
   brokerUrl?: string | object;
@@ -15,10 +15,11 @@ interface Props {
 export default function Connector({
   children,
   brokerUrl,
-  options = {},
+  options = { keepalive: 0 },
   parserMethod,
 }: Props) {
-  const [connectionStatus, setStatus] = useState<string>('offline');
+  const mountedRef = useRef(true);
+  const [connectionStatus, setStatus] = useState<string | Error>('Offline');
   const [client, setClient] = useState<MqttClient | null>(null);
   const [message, setMessage] = useState<IMessage>();
 
@@ -27,17 +28,31 @@ export default function Connector({
       setStatus('Connecting');
       const mqtt = connect(brokerUrl, options);
       mqtt.on('connect', () => {
-        setClient(mqtt);
-        setStatus('Connected');
+        if (mountedRef.current) {
+          setClient(mqtt);
+          setStatus('Connected');
+        }
       });
       mqtt.on('reconnect', () => {
-        setStatus('Reconnecting');
+        if (mountedRef.current) {
+          setStatus('Reconnecting');
+        }
       });
       mqtt.on('error', err => {
-        console.error('Connection error: ', err);
-        mqtt?.end(true, {}, () => {
-          setStatus('offline');
-        });
+        if (mountedRef.current) {
+          console.log(`Connection error: ${err}`);
+          setStatus(err?.message);
+        }
+      });
+      mqtt.on('offline', () => {
+        if (mountedRef.current) {
+          setStatus('Offline');
+        }
+      });
+      mqtt.on('end', () => {
+        if (mountedRef.current) {
+          setStatus('Offline');
+        }
       });
     } catch (error) {
       setStatus(error);
@@ -58,6 +73,7 @@ export default function Connector({
     }
 
     return () => {
+      mountedRef.current = false;
       client?.end(true);
     };
   }, [client, mqttConnect, parserMethod]);

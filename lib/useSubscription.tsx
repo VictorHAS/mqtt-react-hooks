@@ -6,7 +6,7 @@ import MqttContext from './Context';
 import { IMqttContext as Context, IUseSubscription } from './types';
 
 export default function useSubscription(
-  topic: string,
+  topic: string | string[],
   options: IClientSubscribeOptions = {} as IClientSubscribeOptions,
 ): IUseSubscription {
   const { client, connectionStatus, message } = useContext<Context>(
