@@ -49,7 +49,7 @@ import Status from './Status';
 
 export default function App() {
   return (
-    <Connector brokerUrl="mqtt://test.mosquitto.org:1884">
+    <Connector brokerUrl="wss://test.mosquitto.org:1884">
         <Status />
     </Connector>
   );
@@ -158,7 +158,7 @@ const Children = () => {
 const App = () => {
   return (
     <Connector
-      brokerUrl="mqtt://test.mosquitto.org:1884"
+      brokerUrl="wss://test.mosquitto.org:1884"
       parserMethod={msg => msg} // msg is Buffer
     >
       <Children />
