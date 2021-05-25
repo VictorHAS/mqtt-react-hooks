@@ -31,7 +31,7 @@ export default function useSubscription(
       
       client.on('message', callback);
       
-      return () => client.off(callback)
+      return () => client.off('message', callback)
     }
     return
   }, [client, subscribe]);
