@@ -9,7 +9,7 @@ export interface Error {
 export interface IMqttContext {
   connectionStatus: string | Error;
   client?: MqttClient | null;
-  message?: IMessage;
+  parserMethod?: (message: any) => string;
 }
 
 export interface IUseSubscription {
