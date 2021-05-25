@@ -3,7 +3,7 @@ import { useContext, useEffect, useCallback } from 'react';
 import { IClientSubscribeOptions } from 'mqtt';
 
 import MqttContext from './Context';
-import { IMqttContext as Context, IUseSubscription } from './types';
+import { IMqttContext as Context, IUseSubscription, IMessage } from './types';
 
 export default function useSubscription(
   topic: string | string[],
@@ -13,7 +13,7 @@ export default function useSubscription(
     MqttContext,
   );
   
-  const [message, setMessage] = useState()
+  const [message, setMessage] = useState<IMessage | null>(null)
  
   const subscribe = useCallback(async () => {
     client?.subscribe(topic, options);    
