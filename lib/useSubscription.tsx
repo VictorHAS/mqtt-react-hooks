@@ -13,7 +13,7 @@ export default function useSubscription(
     MqttContext,
   );
   
-  const [message, setMessage] = useState<IMessage | null>(null)
+  const [message, setMessage] = useState<IMessage | undefined>(undefined)
  
   const subscribe = useCallback(async () => {
     client?.subscribe(topic, options);    
@@ -24,8 +24,8 @@ export default function useSubscription(
       subscribe();
       
       const callback = (receivedTopic, message) => {
-        if (receivedTopic === topic) {
-          setMessage({topic, message: parserMethod?.(msg) || msg.toString()})
+        if ([topic].flat().includes(receivedTopic)) {
+          setMessage({topic, message: parserMethod?.(message) || message.toString()})
         }
       };
       
@@ -33,6 +33,7 @@ export default function useSubscription(
       
       return () => client.off(callback)
     }
+    return null
   }, [client, subscribe]);
 
   return {
