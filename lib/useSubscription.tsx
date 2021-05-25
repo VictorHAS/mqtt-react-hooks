@@ -23,7 +23,7 @@ export default function useSubscription(
     if (client?.connected) {
       subscribe();
       
-      const callback = (receivedTopic, message) => {
+      const callback = (receivedTopic :string, message) => {
         if ([topic].flat().includes(receivedTopic)) {
           setMessage({receivedTopic, message: parserMethod?.(message) || message.toString()})
         }
