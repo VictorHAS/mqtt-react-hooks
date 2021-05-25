@@ -1,5 +1,5 @@
 import { useContext, useEffect, useCallback, useState } from 'react';
-import { matches } from 'mqtt-pattern';
+import { matche } from 'mqtt-pattern';
 
 import { IClientSubscribeOptions } from 'mqtt';
 
@@ -25,7 +25,7 @@ export default function useSubscription(
       subscribe();
       
       const callback = (receivedTopic :string, message) => {
-        if ([topic].flat().some(receivedTopic => matches(topic, receivedTopic))) {
+        if ([topic].flat().some(receivedTopic => matche(topic, receivedTopic))) {
           setMessage({topic: receivedTopic, message: parserMethod?.(message) || message.toString()})
         }
       };
