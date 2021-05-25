@@ -33,7 +33,7 @@ export default function useSubscription(
       
       return () => client.off(callback)
     }
-    return null
+    return
   }, [client, subscribe]);
 
   return {
