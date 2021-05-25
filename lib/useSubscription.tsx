@@ -9,7 +9,7 @@ export default function useSubscription(
   topic: string | string[],
   options: IClientSubscribeOptions = {} as IClientSubscribeOptions,
 ): IUseSubscription {
-  const { client, connectionStatus } = useContext<Context>(
+  const { client, connectionStatus, parserMethod } = useContext<Context>(
     MqttContext,
   );
   
@@ -25,7 +25,7 @@ export default function useSubscription(
       
       const callback = (receivedTopic, message) => {
         if (receivedTopic === topic) {
-          setMessage({topic, message: message.toString()})
+          setMessage({topic, message: parserMethod?.(msg) || msg.toString()})
         }
       };
       
