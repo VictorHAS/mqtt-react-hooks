@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { connect, MqttClient, IClientOptions } from 'mqtt';
 
 import MqttContext from './Context';
-import { IMessage, Error } from './types';
+import { Error } from './types';
 
 interface Props {
   brokerUrl?: string | object;
@@ -21,7 +21,6 @@ export default function Connector({
   const mountedRef = useRef(true);
   const [connectionStatus, setStatus] = useState<string | Error>('Offline');
   const [client, setClient] = useState<MqttClient | null>(null);
-  const [message, setMessage] = useState<IMessage>();
 
   const mqttConnect = useCallback(async () => {
     try {
@@ -60,15 +59,7 @@ export default function Connector({
   }, [brokerUrl, options]);
 
   useEffect(() => {
-    if (client) {
-      client.on('message', (topic, msg) => {
-        const payload = {
-          topic,
-          message: parserMethod?.(msg) || msg.toString(),
-        };
-        setMessage(payload);
-      });
-    } else {
+    if (!client) {
       mqttConnect();
     }
 
@@ -79,7 +70,7 @@ export default function Connector({
   }, [client, mqttConnect, parserMethod]);
 
   return (
-    <MqttContext.Provider value={{ connectionStatus, client, message }}>
+    <MqttContext.Provider value={{ connectionStatus, client, parserMethod }}>
       {children}
     </MqttContext.Provider>
   );
