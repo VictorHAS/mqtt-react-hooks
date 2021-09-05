@@ -1,7 +1,6 @@
 <div align="center">
 
 [![npm](https://img.shields.io/npm/v/mqtt-react-hooks?color=blue)](https://www.npmjs.com/package/@unform/core)<space><space>
-[![Build Status](https://travis-ci.com/VictorHAS/mqtt-react-hooks.svg?branch=master&color=blue)](https://travis-ci.com/VictorHAS/mqtt-react-hooks)
 
 </div>
 
@@ -10,11 +9,13 @@
 This library is focused in help you to connect, publish and subscribe to a Message Queuing Telemetry Transport (MQTT) in ReactJS with the power of React Hooks.
 
 ## Flow of Data
+
 1. WiFi or other mobile sensors publish data to an MQTT broker
 2. ReactJS subscribes to the MQTT broker and receives the data using MQTT.js
 3. React's state is updated and the data is passed down to stateless components
 
 ## Key features
+
 - React Hooks;
 - Beautiful syntax;
 - Performance focused;
@@ -33,14 +34,17 @@ yarn add mqtt-react-hooks
 - useSubscription(topic: string | string[], options?: {} ) -> return { client, topic, message, connectionStatus }
 
 ### Usage
+
 Currently, mqtt-react-hooks exports one enhancers.
 Similarly to react-redux, you'll have to first wrap a root component with a
-```Connector``` which will initialize the mqtt instance.
+`Connector` which will initialize the mqtt instance.
 
 #### Root component
+
 The only property for the connector is the connection information for [mqtt.Client#connect](https://github.com/mqttjs/MQTT.js#connect)
 
 **Example Root component:**
+
 ```js
 import React from 'react';
 
@@ -50,37 +54,36 @@ import Status from './Status';
 export default function App() {
   return (
     <Connector brokerUrl="wss://test.mosquitto.org:1884">
-        <Status />
+      <Status />
     </Connector>
   );
 }
 ```
 
 **Example Connection Status**
+
 ```js
 import React from 'react';
 
 import { useMqttState } from 'mqtt-react-hooks';
 
 export default function Status() {
-
   /*
-  * Status list
-  * - Offline
-  * - Connected
-  * - Reconnecting
-  * - Closed
-  * - Error: printed in console too
-  */
+   * Status list
+   * - Offline
+   * - Connected
+   * - Reconnecting
+   * - Closed
+   * - Error: printed in console too
+   */
   const { connectionStatus } = useMqttState();
 
-  return (
-    <h1>{`Status: ${connectionStatus}`}</h1>
-  );
+  return <h1>{`Status: ${connectionStatus}`}</h1>;
 }
 ```
 
 #### Subscribe
+
 **Example Posting Messages**
 
 MQTT Client is passed on useMqttState and can be used to publish messages via
@@ -106,25 +109,26 @@ export default function Status() {
 ```
 
 **Example Subscribing and Receiving messages**
+
 ```js
 import React from 'react';
 
 import { useSubscription } from 'mqtt-react-hooks';
 
 export default function Status() {
-
   /* Message structure:
-  *  topic: string
-  *  message: string
-  */
-  const { message } = useSubscription(['room/esp32/testing','room/esp32/light']);
+   *  topic: string
+   *  message: string
+   */
+  const { message } = useSubscription([
+    'room/esp32/testing',
+    'room/esp32/light',
+  ]);
 
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span>
-          {`topic:${message.topic} - message: ${message.message}`}
-        </span>
+        <span>{`topic:${message.topic} - message: ${message.message}`}</span>
       </div>
     </>
   );
@@ -134,13 +138,14 @@ export default function Status() {
 ## Tips
 
 1. If you need to change the format in which messages will be inserted in message useState, you can pass the option of parserMethod in the Connector:
+
 ```js
 import React, { useEffect, useState } from 'react';
 import { Connector, useSubscription } from 'mqtt-react-hooks';
 
 const Children = () => {
   const { message, connectionStatus } = useSubscription('esp32/testing/#');
-  const [messages, setMessages] = useState<any>([]);
+  const [messages, setMessages] = useState < any > [];
 
   useEffect(() => {
     if (message) setMessages((msgs: any) => [...msgs, message]);
@@ -165,9 +170,7 @@ const App = () => {
     </Connector>
   );
 };
-
 ```
-
 
 ## Contributing
 
