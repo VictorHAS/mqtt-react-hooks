@@ -22,7 +22,7 @@ export default function useSubscription(
 
   const callback = useCallback(
     (receivedTopic: string, receivedMessage: any) => {
-      if ([topic].flat().some(rTopic => matches(topic, rTopic))) {
+      if ([topic].flat().some(rTopic => matches(rTopic, receivedTopic))) {
         setMessage({
           topic: receivedTopic,
           message:
