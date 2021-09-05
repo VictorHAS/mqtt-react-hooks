@@ -1,6 +1,6 @@
 <div align="center">
 
-[![npm](https://img.shields.io/npm/v/mqtt-react-hooks?color=blue)](https://www.npmjs.com/package/@unform/core)<space><space>
+[![npm](https://img.shields.io/npm/v/mqtt-react-hooks?color=blue)](https://www.npmjs.com/package/mqtt-react-hooks)<space><space>
 [![Quality and Build](https://github.com/VictorHAS/mqtt-react-hooks/actions/workflows/publish.yml/badge.svg)](https://github.com/VictorHAS/mqtt-react-hooks/actions/workflows/publish.yml)
 
 </div>
