@@ -5,7 +5,7 @@ import { renderHook } from '@testing-library/react-hooks';
 import { Connector, useSubscription } from '../lib';
 import { URL, options } from './connection';
 
-const TOPIC = 'test';
+const TOPIC = 'mqtt/react/hooks/test';
 
 let wrapper;
 
