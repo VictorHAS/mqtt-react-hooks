@@ -23,39 +23,35 @@ export default function Connector({
   const [client, setClient] = useState<MqttClient | null>(null);
 
   const mqttConnect = useCallback(async () => {
-    try {
-      setStatus('Connecting');
-      const mqtt = connect(brokerUrl, options);
-      mqtt.on('connect', () => {
-        if (mountedRef.current) {
-          setClient(mqtt);
-          setStatus('Connected');
-        }
-      });
-      mqtt.on('reconnect', () => {
-        if (mountedRef.current) {
-          setStatus('Reconnecting');
-        }
-      });
-      mqtt.on('error', err => {
-        if (mountedRef.current) {
-          console.log(`Connection error: ${err}`);
-          setStatus(err?.message);
-        }
-      });
-      mqtt.on('offline', () => {
-        if (mountedRef.current) {
-          setStatus('Offline');
-        }
-      });
-      mqtt.on('end', () => {
-        if (mountedRef.current) {
-          setStatus('Offline');
-        }
-      });
-    } catch (error) {
-      setStatus(error);
-    }
+    setStatus('Connecting');
+    const mqtt = connect(brokerUrl, options);
+    mqtt.on('connect', () => {
+      if (mountedRef.current) {
+        setClient(mqtt);
+        setStatus('Connected');
+      }
+    });
+    mqtt.on('reconnect', () => {
+      if (mountedRef.current) {
+        setStatus('Reconnecting');
+      }
+    });
+    mqtt.on('error', err => {
+      if (mountedRef.current) {
+        console.log(`Connection error: ${err}`);
+        setStatus(err.message);
+      }
+    });
+    mqtt.on('offline', () => {
+      if (mountedRef.current) {
+        setStatus('Offline');
+      }
+    });
+    mqtt.on('end', () => {
+      if (mountedRef.current) {
+        setStatus('Offline');
+      }
+    });
   }, [brokerUrl, options]);
 
   useEffect(() => {
