@@ -56,7 +56,10 @@ describe('Connector wrapper', () => {
   it('should connect passing props', async () => {
     const { result, wait } = renderHook(() => useMqttState(), {
       wrapper: ({ children }) => (
-        <Connector brokerUrl={URL} options={{ keepalive: 0 }}>
+        <Connector
+          brokerUrl={URL}
+          options={{ clientId: 'testingMqttUsingProps' }}
+        >
           {children}
         </Connector>
       ),
