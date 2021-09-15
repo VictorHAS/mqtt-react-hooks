@@ -1,23 +1,16 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 
-import { connect, MqttClient, IClientOptions } from 'mqtt';
+import { connect, MqttClient } from 'mqtt';
 
 import MqttContext from './Context';
-import { Error } from './types';
-
-interface Props {
-  brokerUrl?: string | object;
-  options?: IClientOptions;
-  parserMethod?: (message) => string;
-  children: React.ReactNode;
-}
+import { Error, ConnectorProps } from './types';
 
 export default function Connector({
   children,
   brokerUrl,
   options = { keepalive: 0 },
   parserMethod,
-}: Props) {
+}: ConnectorProps) {
   const mountedRef = useRef(true);
   const [connectionStatus, setStatus] = useState<string | Error>('Offline');
   const [client, setClient] = useState<MqttClient | null>(null);

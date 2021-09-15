@@ -1,9 +1,16 @@
-import { MqttClient } from 'mqtt';
+import { MqttClient, IClientOptions } from 'mqtt';
 
 export interface Error {
   name: string;
   message: string;
   stack?: string;
+}
+
+export interface ConnectorProps {
+  brokerUrl?: string | object;
+  options?: IClientOptions;
+  parserMethod?: (message) => string;
+  children: React.ReactNode;
 }
 
 export interface IMqttContext {
