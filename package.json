@@ -114,7 +114,7 @@
     "react-dom": ">= 16.8.0"
   },
   "dependencies": {
-    "mqtt": "^4.2.8",
+    "mqtt": "4.2.8",
     "mqtt-pattern": "^1.2.0"
   },
   "config": {
