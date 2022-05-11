@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 
 import { connect, MqttClient } from 'mqtt';
 
 import MqttContext from './Context';
-import { Error, ConnectorProps } from './types';
+import { Error, ConnectorProps, IMqttContext } from './types';
 
 export default function Connector({
   children,
@@ -11,56 +11,65 @@ export default function Connector({
   options = { keepalive: 0 },
   parserMethod,
 }: ConnectorProps) {
-  const mountedRef = useRef(true);
+  // Using a ref rather than relying on state because it is synchronous
+  const clientValid = useRef(false);
   const [connectionStatus, setStatus] = useState<string | Error>('Offline');
   const [client, setClient] = useState<MqttClient | null>(null);
 
-  const mqttConnect = useCallback(async () => {
-    setStatus('Connecting');
-    const mqtt = connect(brokerUrl, options);
-    mqtt.on('connect', () => {
-      if (mountedRef.current) {
-        setClient(mqtt);
+  useEffect(() => {
+    if (!client && !clientValid.current) {
+      // This synchronously ensures we won't enter this block again
+      // before the client is asynchronously set
+      clientValid.current = true;
+      setStatus('Connecting');
+      console.log(`attempting to connect to ${brokerUrl}`);
+      const mqtt = connect(brokerUrl, options);
+      mqtt.on('connect', () => {
+        console.debug('on connect');
         setStatus('Connected');
-      }
-    });
-    mqtt.on('reconnect', () => {
-      if (mountedRef.current) {
+        // For some reason setting the client as soon as we get it from connect breaks things
+        setClient(mqtt);
+      });
+      mqtt.on('reconnect', () => {
+        console.debug('on reconnect');
         setStatus('Reconnecting');
-      }
-    });
-    mqtt.on('error', err => {
-      if (mountedRef.current) {
+      });
+      mqtt.on('error', err => {
         console.log(`Connection error: ${err}`);
         setStatus(err.message);
-      }
-    });
-    mqtt.on('offline', () => {
-      if (mountedRef.current) {
+      });
+      mqtt.on('offline', () => {
         setStatus('Offline');
-      }
-    });
-    mqtt.on('end', () => {
-      if (mountedRef.current) {
+      });
+      mqtt.on('end', () => {
         setStatus('Offline');
-      }
-    });
-  }, [brokerUrl, options]);
-
-  useEffect(() => {
-    if (!client) {
-      mqttConnect();
+      });
     }
+  }, [client, clientValid, brokerUrl, options]);
 
-    return () => {
-      mountedRef.current = false;
-      client?.end(true);
-    };
-  }, [client, mqttConnect, parserMethod]);
-
-  return (
-    <MqttContext.Provider value={{ connectionStatus, client, parserMethod }}>
-      {children}
-    </MqttContext.Provider>
+  // Only do this when the component unmounts
+  useEffect(
+    () => () => {
+      if (client) {
+        console.log('closing mqtt client');
+        client.end(true);
+        setClient(null);
+        clientValid.current = false;
+      }
+    },
+    [client, clientValid],
   );
+
+  // This is to satisfy
+  // https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-no-constructed-context-values.md
+  const value: IMqttContext = useMemo<IMqttContext>(
+    () => ({
+      connectionStatus,
+      client,
+      parserMethod,
+    }),
+    [connectionStatus, client, parserMethod],
+  );
+
+  return <MqttContext.Provider value={value}>{children}</MqttContext.Provider>;
 }
