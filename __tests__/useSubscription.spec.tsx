@@ -4,7 +4,7 @@
 
 import React from 'react';
 
-import { renderHook, waitFor } from '@testing-library/react';
+import { cleanup, renderHook, waitFor } from '@testing-library/react';
 
 import { Connector, useSubscription } from '../lib';
 import { URL, options } from './connection';
@@ -21,6 +21,8 @@ describe('useSubscription', () => {
       </Connector>
     );
   });
+
+  afterEach(cleanup)
 
   it('should get message on topic test', async () => {
     const { result } = renderHook(
