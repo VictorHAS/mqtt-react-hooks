@@ -39,9 +39,11 @@ export default function Connector({
         setStatus(err.message);
       });
       mqtt.on('offline', () => {
+        console.debug('on offline');
         setStatus('Offline');
       });
       mqtt.on('end', () => {
+        console.debug('on end');
         setStatus('Offline');
       });
     }
