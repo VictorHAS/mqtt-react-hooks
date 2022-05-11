@@ -32,15 +32,7 @@ describe('Connector wrapper', () => {
       ),
     });
 
-    await waitFor(() => result.current.connectionStatus);
-
-    expect(result.current.connectionStatus).toBe(
-      'getaddrinfo ENOTFOUND test.mosqu.org',
-    );
-
-    await waitFor(() => result.current.connectionStatus);
-
-    expect(result.current.connectionStatus).toBe('Offline');
+    await waitFor(() => expect(result.current.connectionStatus).toBe('Offline'));
   });
 
   it('should connect with mqtt', async () => {
@@ -48,12 +40,12 @@ describe('Connector wrapper', () => {
       wrapper,
     });
 
-    await waitFor(() => result.current.client?.connected === true);
+    await waitFor(() => expect(result.current.client?.connected).toBe(true));
 
     expect(result.current.connectionStatus).toBe('Connected');
 
     await act(async () => {
-      await result.current.client?.end();
+      result.current.client?.end();
     });
   });
 
@@ -69,12 +61,12 @@ describe('Connector wrapper', () => {
       ),
     });
 
-    await waitFor(() => result.current.client?.connected === true);
+    await waitFor(() => expect(result.current.client?.connected).toBe(true));
 
     expect(result.current.connectionStatus).toBe('Connected');
 
     await act(async () => {
-      await result.current.client?.end();
+      result.current.client?.end();
     });
   });
 });
