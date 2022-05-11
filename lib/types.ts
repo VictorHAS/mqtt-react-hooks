@@ -7,7 +7,7 @@ export interface Error {
 }
 
 export interface ConnectorProps {
-  brokerUrl?: string | object;
+  brokerUrl: string;
   options?: IClientOptions;
   parserMethod?: (message) => string;
   children: React.ReactNode;
@@ -19,13 +19,6 @@ export interface IMqttContext {
   parserMethod?: (message: any) => string;
 }
 
-export interface IUseSubscription {
-  topic: string | string[];
-  client?: MqttClient | null;
-  message?: IMessage;
-  connectionStatus: string | Error;
-}
-
 export interface IMessageStructure {
   [key: string]: string;
 }
@@ -33,6 +26,13 @@ export interface IMessageStructure {
 export interface IMessage {
   topic: string;
   message?: string | IMessageStructure;
+}
+
+export interface IUseSubscription {
+  topic: string | string[];
+  client?: MqttClient | null;
+  message?: IMessage;
+  connectionStatus: string | Error;
 }
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
