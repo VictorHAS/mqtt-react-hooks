@@ -48,7 +48,7 @@
   "scripts": {
     "prebuild": "rimraf dist typings",
     "build": "rollup -c ./rollup.config.js",
-    "test": "jest --runInBand --detectOpenHandles",
+    "test": "jest --runInBand --detectOpenHandles --silent",
     "coveralls": "jest && cat ./__tests__/coverage/lcov.info | coveralls",
     "prepare": "husky install"
   },
