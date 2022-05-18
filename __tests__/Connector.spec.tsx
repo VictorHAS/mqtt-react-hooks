@@ -1,6 +1,10 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react';
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act, waitFor } from '@testing-library/react';
 
 import { useMqttState, Connector } from '../lib';
 import { URL, options } from './connection';
@@ -17,7 +21,7 @@ describe('Connector wrapper', () => {
   });
 
   it('should not connect with mqtt, wrong url', async () => {
-    const { result, waitForValueToChange } = renderHook(() => useMqttState(), {
+    const { result } = renderHook(() => useMqttState(), {
       wrapper: ({ children }) => (
         <Connector
           brokerUrl="mqtt://test.mosqu.org:1884"
@@ -28,33 +32,25 @@ describe('Connector wrapper', () => {
       ),
     });
 
-    await waitForValueToChange(() => result.current.connectionStatus);
-
-    expect(result.current.connectionStatus).toBe(
-      'getaddrinfo ENOTFOUND test.mosqu.org',
-    );
-
-    await waitForValueToChange(() => result.current.connectionStatus);
-
-    expect(result.current.connectionStatus).toBe('Offline');
+    await waitFor(() => expect(result.current.connectionStatus).toBe('Offline'));
   });
 
   it('should connect with mqtt', async () => {
-    const { result, wait } = renderHook(() => useMqttState(), {
+    const { result } = renderHook(() => useMqttState(), {
       wrapper,
     });
 
-    await wait(() => result.current.client?.connected === true);
+    await waitFor(() => expect(result.current.client?.connected).toBe(true));
 
     expect(result.current.connectionStatus).toBe('Connected');
 
     await act(async () => {
-      await result.current.client?.end();
+      result.current.client?.end();
     });
   });
 
   it('should connect passing props', async () => {
-    const { result, wait } = renderHook(() => useMqttState(), {
+    const { result } = renderHook(() => useMqttState(), {
       wrapper: ({ children }) => (
         <Connector
           brokerUrl={URL}
@@ -65,12 +61,12 @@ describe('Connector wrapper', () => {
       ),
     });
 
-    await wait(() => result.current.client?.connected === true);
+    await waitFor(() => expect(result.current.client?.connected).toBe(true));
 
     expect(result.current.connectionStatus).toBe('Connected');
 
     await act(async () => {
-      await result.current.client?.end();
+      result.current.client?.end();
     });
   });
 });

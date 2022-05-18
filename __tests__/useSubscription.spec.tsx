@@ -1,6 +1,10 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react';
 
-import { renderHook } from '@testing-library/react-hooks';
+import { cleanup, renderHook, waitFor } from '@testing-library/react';
 
 import { Connector, useSubscription } from '../lib';
 import { URL, options } from './connection';
@@ -18,33 +22,35 @@ describe('useSubscription', () => {
     );
   });
 
+  afterEach(cleanup)
+
   it('should get message on topic test', async () => {
-    const { result, waitForValueToChange } = renderHook(
+    const { result } = renderHook(
       () => useSubscription(TOPIC),
       {
         wrapper,
       },
     );
 
-    await waitForValueToChange(() => result.current.client?.connected === true);
+    await waitFor(() => expect(result.current.client?.connected).toBe(true));
 
     const message = 'testing message';
-    result.current.client?.publish(TOPIC, message);
+    result.current.client?.publish(TOPIC, message, (err) => {
+      expect(err).toBeFalsy()
+    });
 
-    await waitForValueToChange(() => result.current.message);
-
-    expect(result.current?.message?.message).toBe(message);
+    await waitFor(() => expect(result.current?.message?.message).toBe(message));
   });
 
   it('should get message on topic with single selection of the path + ', async () => {
-    const { result, wait, waitForValueToChange } = renderHook(
+    const { result } = renderHook(
       () => useSubscription(`${TOPIC}/+/test/+/selection`),
       {
         wrapper,
       },
     );
 
-    await wait(() => result.current.client?.connected === true);
+    await waitFor(() => expect(result.current.client?.connected).toBe(true));
 
     const message = 'testing single selection message';
 
@@ -53,27 +59,23 @@ describe('useSubscription', () => {
       message,
     );
 
-    await waitForValueToChange(() => result.current.message);
-
-    expect(result.current.message?.message).toBe(message);
+    await waitFor(() => expect(result.current.message?.message).toBe(message));
   });
 
   it('should get message on topic with # wildcard', async () => {
-    const { result, wait, waitForValueToChange } = renderHook(
+    const { result } = renderHook(
       () => useSubscription(`${TOPIC}/#`),
       {
         wrapper,
       },
     );
 
-    await wait(() => result.current.client?.connected === true);
+    await waitFor(() => expect(result.current.client?.connected).toBe(true));
 
     const message = 'testing with # wildcard';
 
     result.current.client?.publish(`${TOPIC}/match/test/wildcard`, message);
 
-    await waitForValueToChange(() => result.current.message);
-
-    expect(result.current.message?.message).toBe(message);
+    await waitFor(() => expect(result.current.message?.message).toBe(message));
   });
 });
