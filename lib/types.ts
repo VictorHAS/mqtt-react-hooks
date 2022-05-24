@@ -1,4 +1,12 @@
-import { MqttClient, IClientOptions } from 'mqtt';
+import React from 'react';
+
+import {
+  MqttClient,
+  IClientOptions,
+  IClientSubscribeOptions,
+  ClientSubscribeCallback,
+  OnMessageCallback,
+} from 'mqtt';
 
 export interface Error {
   name: string;
@@ -11,6 +19,15 @@ export interface ConnectorProps {
   options?: IClientOptions;
   parserMethod?: (message) => string;
   children: React.ReactNode;
+}
+
+export interface SubscriptionProps {
+  topic: string | string[];
+  client?: MqttClient | null;
+  options: IClientSubscribeOptions;
+  subscribeCallback?: ClientSubscribeCallback;
+  messageCallback?: OnMessageCallback;
+  children: React.ReactNode | React.ReactNode[];
 }
 
 export interface IMqttContext {

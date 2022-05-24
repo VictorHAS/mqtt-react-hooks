@@ -111,28 +111,27 @@ export default function Status() {
 
 **Example Subscribing and Receiving messages**
 
-```js
+```jsx
 import React from 'react';
 
 import { useSubscription } from 'mqtt-react-hooks';
 
-export default function Status() {
-  /* Message structure:
-   *  topic: string
-   *  message: string
-   */
-  const { message } = useSubscription([
-    'room/esp32/testing',
-    'room/esp32/light',
-  ]);
+export default function Subscriber() {
+const { Subscription: Esp32Subscription, Esp32MessageContext } = createSubscription()
 
-  return (
-    <>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span>{`topic:${message.topic} - message: ${message.message}`}</span>
-      </div>
-    </>
-  );
+return (
+  <Esp32Subscription
+    topic={['room/esp32/testing','room/esp32/light']}
+    subscribeCallback={message => console.log(`subscribed to ${JSON.stringify(message?.topic)}`)}
+    messageCallback={message => console.log(`received ${JSON.stringify(message)}`)}>
+      <Esp32MessageContext.Consumer>
+        {message => 
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span>{`topic:${message.topic} - message: ${message.message}`}</span>
+          </div>
+        }
+      </Esp32MessageContext.Consumer>
+  </Esp32Subscription>);
 }
 ```
 
