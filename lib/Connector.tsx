@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 
-import { connect, MqttClient } from 'mqtt';
+import { connect, MqttClient } from 'precompiled-mqtt';
 
 import MqttContext from './Context';
 import { Error, ConnectorProps, IMqttContext } from './types';
