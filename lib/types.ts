@@ -1,6 +1,7 @@
-import { MqttClient, IClientOptions } from 'mqtt';
+import type { IClientOptions, MqttClient } from 'mqtt';
+import type { SubscriptionManager } from './SubscriptionManager';
 
-export interface Error {
+export interface MqttError {
   name: string;
   message: string;
   stack?: string;
@@ -9,14 +10,15 @@ export interface Error {
 export interface ConnectorProps {
   brokerUrl: string;
   options?: IClientOptions;
-  parserMethod?: (message) => string;
+  parserMethod?: (message: Buffer) => string;
   children: React.ReactNode;
 }
 
 export interface IMqttContext {
-  connectionStatus: string | Error;
-  client?: MqttClient | null;
-  parserMethod?: (message: any) => string;
+  connectionStatus: string | MqttError;
+  client: MqttClient | null;
+  parserMethod?: (message: Buffer) => string;
+  manager?: SubscriptionManager;
 }
 
 export interface IMessageStructure {
@@ -32,7 +34,5 @@ export interface IUseSubscription {
   topic: string | string[];
   client?: MqttClient | null;
   message?: IMessage;
-  connectionStatus: string | Error;
+  connectionStatus: string | MqttError;
 }
-
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;

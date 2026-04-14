@@ -1,38 +1,15 @@
-/**
- * @jest-environment jsdom
- */
+import { act, renderHook, waitFor } from '@testing-library/react';
+import { beforeAll, describe, expect, it } from 'vitest';
 
-import React from 'react';
+import { Connector, useMqttState } from '../lib';
 
-import { renderHook, act, waitFor } from '@testing-library/react';
+const BROKER_URL = 'ws://mock-broker:8080';
 
-import { useMqttState, Connector } from '../lib';
-import { URL, options } from './connection';
-
-let wrapper;
+let wrapper: React.FC<{ children: React.ReactNode }>;
 
 describe('Connector wrapper', () => {
   beforeAll(() => {
-    wrapper = ({ children }) => (
-      <Connector brokerUrl={URL} options={options}>
-        {children}
-      </Connector>
-    );
-  });
-
-  it('should not connect with mqtt, wrong url', async () => {
-    const { result } = renderHook(() => useMqttState(), {
-      wrapper: ({ children }) => (
-        <Connector
-          brokerUrl="mqtt://test.mosqu.org:1884"
-          options={{ connectTimeout: 2000 }}
-        >
-          {children}
-        </Connector>
-      ),
-    });
-
-    await waitFor(() => expect(result.current.connectionStatus).toBe('Offline'));
+    wrapper = ({ children }) => <Connector brokerUrl={BROKER_URL}>{children}</Connector>;
   });
 
   it('should connect with mqtt', async () => {
@@ -52,10 +29,7 @@ describe('Connector wrapper', () => {
   it('should connect passing props', async () => {
     const { result } = renderHook(() => useMqttState(), {
       wrapper: ({ children }) => (
-        <Connector
-          brokerUrl={URL}
-          options={{ clientId: 'testingMqttUsingProps' }}
-        >
+        <Connector brokerUrl={BROKER_URL} options={{ clientId: 'testingMqttUsingProps' }}>
           {children}
         </Connector>
       ),

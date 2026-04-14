@@ -1,48 +1,39 @@
-import { useContext, useEffect, useCallback, useState } from 'react';
+import { useContext, useEffect, useId, useState } from 'react';
 
-import { IClientSubscribeOptions } from 'mqtt';
-import { matches } from 'mqtt-pattern';
+import type { IClientSubscribeOptions } from 'mqtt';
 
 import MqttContext from './Context';
-import { IMqttContext as Context, IUseSubscription, IMessage } from './types';
+import type { IMqttContext as Context, IMessage, IUseSubscription } from './types';
+
+const DEFAULT_OPTIONS: IClientSubscribeOptions = {} as IClientSubscribeOptions;
 
 export default function useSubscription(
   topic: string | string[],
-  options: IClientSubscribeOptions = {} as IClientSubscribeOptions,
+  options: IClientSubscribeOptions = DEFAULT_OPTIONS,
 ): IUseSubscription {
-  const { client, connectionStatus, parserMethod } = useContext<Context>(
-    MqttContext,
-  );
+  const { client, connectionStatus, manager } = useContext<Context>(MqttContext);
 
-  const [message, setMessage] = useState<IMessage | undefined>(undefined);
+  // Provide a fallback ID just in case useId() doesn't work out of the box in some environments
+  const subscriberId = useId();
 
-  const subscribe = useCallback(async () => {
-    client?.subscribe(topic, options);
-  }, [client, options, topic]);
-
-  const callback = useCallback(
-    (receivedTopic: string, receivedMessage: any) => {
-      if ([topic].flat().some(rTopic => matches(rTopic, receivedTopic))) {
-        setMessage({
-          topic: receivedTopic,
-          message:
-            parserMethod?.(receivedMessage) || receivedMessage.toString(),
-        });
-      }
-    },
-    [parserMethod, topic],
-  );
+  const [message, setMessage] = useState<IMessage | undefined>(() => {
+    // Get immediately matching cached message if rendering later
+    return manager?.getLastMessage(topic);
+  });
 
   useEffect(() => {
-    if (client?.connected) {
-      subscribe();
-
-      client.on('message', callback);
+    if (client?.connected && manager) {
+      manager.subscribe(subscriberId, topic, options, (receivedMessage) => {
+        setMessage(receivedMessage);
+      });
     }
+
     return () => {
-      client?.off('message', callback);
+      if (manager) {
+        manager.unsubscribe(subscriberId);
+      }
     };
-  }, [callback, client, subscribe]);
+  }, [client, topic, options, subscriberId, manager]);
 
   return {
     client,

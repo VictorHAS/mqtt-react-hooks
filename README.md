@@ -9,73 +9,67 @@
 
 This library is focused in help you to connect, publish and subscribe to a Message Queuing Telemetry Transport (MQTT) in ReactJS with the power of React Hooks.
 
-## Flow of Data
+## 🚀 Version 3.0.0 - Major Architecture Rewrite!
+Version `3.0.0` introduces a globally scalable **SubscriptionManager multiplexer**.
 
-1. WiFi or other mobile sensors publish data to an MQTT broker
-2. ReactJS subscribes to the MQTT broker and receives the data using MQTT.js
-3. React's state is updated and the data is passed down to stateless components
-
-## Key features
-
-- React Hooks;
-- Beautiful syntax;
-- Performance focused;
+* **Zero Event Duplication**: Calling `useSubscription` inside multiple nested components no longer spawns duplicate `client.on('message')` listeners. Everything routes perfectly through a single Singleton-Context listener.
+* **Intelligent Reference Counting**: The broker only `.subscribe`s over the network on the first mount. When the very last matching hook unmounts, it safely triggers `.unsubscribe()`.
+* **Pre-Hydrated Cache**: If a sensor event occurs and a React hook mounts a few seconds later, it instantly loads the *cached payload*.
+* **Upgraded Core**: Powered natively by the highly robust latest `mqtt` v5 implementation.
 
 ## Installation
 
-Just add mqtt-react-hooks to your project:
+Just add `mqtt-react-hooks` and `mqtt` to your project:
 
+```bash
+npm add mqtt-react-hooks mqtt
 ```
-yarn add mqtt-react-hooks
-```
 
-### Hooks availables
+### Exported Hooks
 
-- useMqttState -> return { connectionStatus, client, message }
-- useSubscription(topic: string | string[], options?: {} ) -> return { client, topic, message, connectionStatus }
+- `useMqttState` -> returns `{ connectionStatus, client, message }`
+- `useSubscription(topic: string | string[], options?: {} )` -> returns `{ client, topic, message, connectionStatus }`
 
-### Usage
+---
 
-Currently, mqtt-react-hooks exports one enhancers.
-Similarly to react-redux, you'll have to first wrap a root component with a
-`Connector` which will initialize the mqtt instance.
+## Usage
 
-#### Root component
+Similarly to `react-redux`, you must first wrap your application (or subtree) with a `<Connector>` which will initialize the internal Mqtt Client instance and Subscription Multiplexer.
 
-The only property for the connector is the connection information for [mqtt.Client#connect](https://github.com/mqttjs/MQTT.js#connect)
+### Root component
 
-**Example Root component:**
+The only required prop is `brokerUrl`. Additional options follow the standard [mqtt.Client#connect](https://github.com/mqttjs/MQTT.js#connect) schema.
 
-```js
+```tsx
 import React from 'react';
-
 import { Connector } from 'mqtt-react-hooks';
 import Status from './Status';
 
 export default function App() {
   return (
-    <Connector brokerUrl="wss://test.mosquitto.org:1884">
+    <Connector brokerUrl="wss://test.mosquitto.org:8081/mqtt">
       <Status />
     </Connector>
   );
 }
 ```
 
-**Example Connection Status**
+### Connection Status
 
-```js
+Use `useMqttState` to universally extract the internal connection variables safely without subscribing to topics.
+
+```tsx
 import React from 'react';
-
 import { useMqttState } from 'mqtt-react-hooks';
 
 export default function Status() {
   /*
-   * Status list
-   * - Offline
+   * Status strings:
+   * - Connecting
    * - Connected
    * - Reconnecting
-   * - Closed
-   * - Error: printed in console too
+   * - Offline
+   * - Error
    */
   const { connectionStatus } = useMqttState();
 
@@ -83,94 +77,54 @@ export default function Status() {
 }
 ```
 
-#### Subscribe
+### Subscribing to Overlapping Topics
 
-**Example Posting Messages**
+ Multiple components can subscribe directly to arrays or exact wildcard filters independently without clashing.
 
-MQTT Client is passed on useMqttState and can be used to publish messages via
-[mqtt.Client#publish](https://github.com/mqttjs/MQTT.js#publish) and don't need Subscribe
-
-```js
+```tsx
 import React from 'react';
-import { useMqttState } from 'mqtt-react-hooks';
-
-export default function Status() {
-  const { client } = useMqttState();
-
-  function handleClick(message) {
-    return client.publish('esp32/led', message);
-  }
-
-  return (
-    <button type="button" onClick={() => handleClick('false')}>
-      Disable led
-    </button>
-  );
-}
-```
-
-**Example Subscribing and Receiving messages**
-
-```js
-import React from 'react';
-
 import { useSubscription } from 'mqtt-react-hooks';
 
-export default function Status() {
+export default function RoomGauges() {
   /* Message structure:
    *  topic: string
-   *  message: string
+   *  message: string (or Buffer depending on parser)
    */
   const { message } = useSubscription([
-    'room/esp32/testing',
-    'room/esp32/light',
+    'room/livingroom/temperature',
+    'room/kitchen/temperature',
   ]);
 
   return (
-    <>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span>{`topic:${message.topic} - message: ${message.message}`}</span>
-      </div>
-    </>
+    <div>
+      <span>Latest Update: {message?.topic}</span>
+      <h2>{message?.message}°C</h2>
+    </div>
   );
 }
 ```
 
-## Tips
+### Publishing Messages
 
-1. If you need to change the format in which messages will be inserted in message useState, you can pass the option of parserMethod in the Connector:
+You don't need a topic subscription if you just want to publish! You can use `useMqttState` (or pass an empty array to `useSubscription([])`) to just grab the raw client object:
 
-```js
-import React, { useEffect, useState } from 'react';
-import { Connector, useSubscription } from 'mqtt-react-hooks';
+```tsx
+import React from 'react';
+import { useSubscription } from 'mqtt-react-hooks';
 
-const Children = () => {
-  const { message, connectionStatus } = useSubscription('esp32/testing/#');
-  const [messages, setMessages] = useState < any > [];
+export default function SwitchButton() {
+  const { client } = useSubscription([]);
 
-  useEffect(() => {
-    if (message) setMessages((msgs: any) => [...msgs, message]);
-  }, [message]);
+  function handleClick() {
+    client?.publish('room/livingroom/lights', 'OFF');
+  }
 
   return (
-    <>
-      <span>{connectionStatus}</span>
-      <hr />
-      <span>{JSON.stringify(messages)}</span>
-    </>
+    <button type="button" onClick={handleClick}>
+      Disable Lights
+    </button>
   );
-};
-
-const App = () => {
-  return (
-    <Connector
-      brokerUrl="wss://test.mosquitto.org:1884"
-      parserMethod={msg => msg} // msg is Buffer
-    >
-      <Children />
-    </Connector>
-  );
-};
+}
 ```
 
 ## Contributing

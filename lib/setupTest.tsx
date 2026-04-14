@@ -1,2 +1,2 @@
-import '@testing-library/react';
-import '@testing-library/jest-dom';
+import '../__tests__/mqttMock';
+import '@testing-library/jest-dom/vitest';
