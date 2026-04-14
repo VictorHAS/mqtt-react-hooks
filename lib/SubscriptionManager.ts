@@ -57,13 +57,11 @@ export class SubscriptionManager {
     if (this.lastMessageId === msgId && now - this.lastMessageTimestamp < 100) {
       return;
     }
-    
+
     this.lastMessageId = msgId;
     this.lastMessageTimestamp = now;
 
-    const payload = this.parserMethod
-      ? this.parserMethod(receivedMessage)
-      : payloadBufferString;
+    const payload = this.parserMethod ? this.parserMethod(receivedMessage) : payloadBufferString;
     const message: IMessage = { topic: receivedTopic, message: payload };
 
     // Update cache (delete first to update iteration order so latest is always at the end)

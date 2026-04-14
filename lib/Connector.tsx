@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import * as mqtt from 'mqtt';
-import type {MqttClient} from 'mqtt';
+import type { MqttClient } from 'mqtt';
 
 import MqttContext from './Context';
 import { SubscriptionManager } from './SubscriptionManager';
@@ -33,7 +33,10 @@ export default function Connector({
 
       // Vite/Webpack CJS-ESM interop wraps the mqtt module in a .default property
       const connectFn = mqtt.connect || (mqtt as any).default?.connect || (mqtt as any).default;
-      const clientInstance: MqttClient = typeof connectFn === 'function' ? connectFn(brokerUrl, options) : (mqtt as any).connect(brokerUrl, options);
+      const clientInstance: MqttClient =
+        typeof connectFn === 'function'
+          ? connectFn(brokerUrl, options)
+          : (mqtt as any).connect(brokerUrl, options);
       manager.setClient(clientInstance);
 
       clientInstance.on('connect', () => {
