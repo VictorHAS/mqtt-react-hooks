@@ -129,6 +129,12 @@ export default function SwitchButton() {
 }
 ```
 
+## Tips
+
+### Bundler Troubleshooting (Vite / Webpack)
+
+If your specific bundler configuration struggles to resolve Node-specific modules (like `Buffer` or `process`) natively, or if you run into strict ESM resolution errors, check out the [MQTT.js Bundle documentation](https://github.com/mqttjs/MQTT.js#bundle). MQTT.js provides pre-built browser-optimized distributions (e.g., `mqtt/dist/mqtt.min`) which you can alias or import directly if needed.
+
 ## Contributing
 
 Thanks for being interested on making this package better. We encourage everyone to help improving this project with some new features, bug fixes and performance issues. Please take a little bit of your time to read our guides, so this process can be faster and easier.
