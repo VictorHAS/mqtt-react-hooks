@@ -1,0 +1,2 @@
+bunx biome ci .
+bun run test

@@ -75,6 +75,10 @@ export function createMockMqttClient(): MqttClient {
 }
 
 // Mock the mqtt module
-vi.mock('mqtt', () => ({
-  connect: vi.fn(() => createMockMqttClient()),
-}));
+vi.mock('mqtt', () => {
+  const connectFn = vi.fn(() => createMockMqttClient());
+  return {
+    connect: connectFn,
+    default: { connect: connectFn },
+  };
+});
