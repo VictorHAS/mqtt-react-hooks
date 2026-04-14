@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import * as mqtt from 'mqtt';
-import type { MqttClient } from 'mqtt';
+import mqtt, { type MqttClient } from 'mqtt';
 
 import MqttContext from './Context';
 import { SubscriptionManager } from './SubscriptionManager';
@@ -25,17 +24,17 @@ export default function Connector({
   const [client, setClient] = useState<MqttClient | null>(null);
 
   useEffect(() => {
-    if (!client && !clientValid.current) {
+    if (!client && !clientValid.current && brokerUrl) {
       // This synchronously ensures we won't enter this block again
       // before the client is asynchronously set
       clientValid.current = true;
       setStatus('Connecting');
 
-      // Vite/Webpack CJS-ESM interop wraps the mqtt module in a .default property
+      // Vite/Webpack CJS-ESM interop wraps the mqtt module in a .default property if not natively resolved
       const connectFn = mqtt.connect || (mqtt as any).default?.connect || (mqtt as any).default;
       const clientInstance: MqttClient =
         typeof connectFn === 'function'
-          ? connectFn(brokerUrl, options)
+          ? connectFn(brokerUrl as string, options)
           : (mqtt as any).connect(brokerUrl, options);
       manager.setClient(clientInstance);
 
