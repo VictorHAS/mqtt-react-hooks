@@ -29,12 +29,6 @@
     }
   },
   "files": {
-    "ignore": [
-      "dist",
-      "node_modules",
-      "coverage",
-      "example",
-      "example-nextjs"
-    ]
+    "ignore": ["dist", "node_modules", "coverage", "example", "example-nextjs"]
   }
 }
