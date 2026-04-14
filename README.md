@@ -7,6 +7,8 @@
 
 ## Overview
 
+> **A note from the author**: Sorry for the lack of updates since 2021! I originally built this library for my graduation project when I was very new to programming. Today, armed with a deeper understanding and far better tools, I've finally come back to fix everything and transform this into the library it was always meant to be. Thank you for your patience!
+
 This library is focused in help you to connect, publish and subscribe to a Message Queuing Telemetry Transport (MQTT) in ReactJS with the power of React Hooks.
 
 ## 🚀 Version 3.0.0 - Major Architecture Rewrite!
